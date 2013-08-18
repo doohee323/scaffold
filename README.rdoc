@@ -1,28 +1,35 @@
-== README
+http://valley.egloos.com/viewer/?url=http://killins.egloos.com/3009833
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+rails new blog
+rake db:create
+rails generate controller home index
 
-Things you may want to cover:
+config/routes.rb
+	root  :to => "home#index"
+	
+rails generate scaffold Post name:string title:string content:text
 
-* Ruby version
+rake db:migrate
 
-* System dependencies
+app/views/home/index.html.erb
 
-* Configuration
+<%= link_to "My Blog", posts_path %>
 
-* Database creation
+app/models/post.rb
 
-* Database initialization
+class Post < ActiveRecord::Base
+  attr_accessible :content, :name, :title
+      validates    :name,    :presence => true
+      validates    :title, :presence => true,
+                       :length => { :minimum => 5}
+end
 
-* How to run the test suite
+app/controllers/posts_controller.rb
 
-* Services (job queues, cache servers, search engines, etc.)
-
-* Deployment instructions
-
-* ...
-
-
-Please feel free to use a different markup language if you do not plan to run
-<tt>rake doc:app</tt>.
+	  def index
+        @posts = Post.all
+        respond_to do |format|
+          format.html                         # index.html.erb
+          format.json { render json: @posts }
+        end
+      end
